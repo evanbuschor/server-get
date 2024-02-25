@@ -7,5 +7,5 @@ This is a simple utility I wrote that helps me get info about a server I'm on. I
 
 One line script you can copy paste to download and run the script:
 ```sh
-wget -O system_info.sh "https://raw.githubusercontent.com/evanbuschor/server-get/main/main.sh" && chmod +x system_info.sh && ./system_info.sh
+wget -O system_info.sh "https://raw.githubusercontent.com/evanbuschor/server-get/main/main.sh" && chmod +x system_info.sh && sudo ./system_info.sh
 ```
