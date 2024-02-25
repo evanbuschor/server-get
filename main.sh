@@ -6,16 +6,23 @@ is_package_installed() {
     return $?
 }
 
+echo "Checking and installing required packages..."
+echo "--------------------------------------------"
 # Install required packages if they are not already installed
 REQUIRED_PACKAGES=("dmidecode" "lshw" "net-tools" "smartmontools" "util-linux" "hdparm" "nvme-cli")
 for pkg in "${REQUIRED_PACKAGES[@]}"; do
     if ! is_package_installed "$pkg"; then
         echo "$pkg is not installed. Installing..."
         sudo apt-get update && sudo apt-get install -y "$pkg"
+        echo "" # Line break for readability
     else
         echo "$pkg is already installed."
+        echo "" # Line break for readability
     fi
 done
+
+echo "Collecting system information..."
+echo "--------------------------------"
 
 # System Information
 PC_NAME=$(hostname)
@@ -28,23 +35,30 @@ RAM_INFO=$(sudo lshw -class memory | grep -A 5 "System Memory" | grep size | awk
 RAM_TYPE=$(sudo dmidecode --type memory | grep Type: | head -1 | awk '{print $2}')
 
 # Display Basic System Information
+echo -e "\nBasic System Information:"
+echo "--------------------------------"
 echo "PC Name: $PC_NAME"
 echo "IP Address: $IP_ADDRESS"
 echo "Manufacturer: $MANUFACTURER_INFO $MODEL_INFO"
 echo "CPU: $CPU_INFO, Cores: $CPU_CORES"
 echo "RAM: $RAM_INFO, Type: $RAM_TYPE"
+echo "--------------------------------"
 
 # Ensure the script is run with root privileges to access hdparm details
-if [ "$EUID" -ne 0 ]
-  then echo "Please run as root"
-  exit
+if [ "$EUID" -ne 0 ]; then 
+    echo "Please run as root"
+    exit
 fi
+
+echo "Analyzing storage devices..."
+echo "--------------------------------"
 
 # Get list of block devices
 devices=$(lsblk -dno NAME,TYPE | grep disk | awk '{print $1}')
 
 for device in $devices; do
-    echo "Processing /dev/$device ..."
+    echo -e "\nProcessing /dev/$device ..."
+    echo "--------------------------------"
 
     # Getting basic device info
     device_info=$(lsblk -dno NAME,SIZE,VENDOR,MODEL /dev/$device)
